@@ -4,6 +4,7 @@
 #include "StartFinishTrigger.h"
 #include "GameFramework/Actor.h"
 #include "Engine/Engine.h"
+#include "RaceGameState.h"
 
 AStartFinishTrigger::AStartFinishTrigger()
 {
@@ -21,14 +22,23 @@ void AStartFinishTrigger::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherA
 {
     if (OtherActor && OtherActor != this)
     {
-        UE_LOG(LogTemp, Warning, TEXT("START or FINISH triggered by: %s"), *OtherActor->GetName());
+        ARaceGameState* RaceState = GetWorld()->GetGameState<ARaceGameState>();
+        if (!RaceState)
+        {
+            return;
+        }
+
+        if (IsThisStart)
+        {
+            RaceState->StartRace();
+        }
+        else
+        {
+            RaceState->FinishRace();
+        }
     }
 }
 
 void AStartFinishTrigger::OnOverlapEnd(AActor* OverlappedActor, AActor* OtherActor)
 {
-    if (OtherActor && OtherActor != this)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Actor exited trigger: %s"), *OtherActor->GetName());
-    }
 }

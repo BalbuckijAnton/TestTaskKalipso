@@ -17,6 +17,9 @@ class TESTTASKKALIPSO_API AStartFinishTrigger : public ATriggerBox
 public:
     AStartFinishTrigger();
 
+    UPROPERTY(EditAnywhere, Category = "Race")
+    bool IsThisStart;
+
 protected:
     virtual void BeginPlay() override;
 
