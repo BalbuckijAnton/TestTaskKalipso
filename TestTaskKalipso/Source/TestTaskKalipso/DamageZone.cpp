@@ -1,0 +1,63 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "DamageZone.h"
+#include "HealthComponent.h"
+
+ADamageZone::ADamageZone()
+{
+    PrimaryActorTick.bCanEverTick = false;
+}
+
+void ADamageZone::BeginPlay()
+{
+    Super::BeginPlay();
+
+    OnActorBeginOverlap.AddDynamic(this, &ADamageZone::OnOverlapBegin);
+    OnActorEndOverlap.AddDynamic(this, &ADamageZone::OnOverlapEnd);
+}
+
+void ADamageZone::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
+{
+    if (!OtherActor || OtherActor == this) return;
+
+    UHealthComponent* HealthComponent = Cast< UHealthComponent>(OtherActor->GetComponentByClass(UHealthComponent::StaticClass()));
+    if (HealthComponent && !ActiveTimers.Contains(OtherActor))
+    {
+        FTimerHandle NewTimer;
+        GetWorldTimerManager().SetTimer(
+            NewTimer,
+            [this, HealthComponent]()
+            {
+                ApplyDamageToActor(HealthComponent);
+            },
+            DamageIntervalSecond,
+            true
+        );
+
+        ActiveTimers.Add(OtherActor, NewTimer);
+
+        UE_LOG(LogTemp, Warning, TEXT("%s entered, timer started"), *OtherActor->GetName());
+    }
+}
+
+void ADamageZone::OnOverlapEnd(AActor* OverlappedActor, AActor* OtherActor)
+{
+    if (!OtherActor) return;
+
+    if (FTimerHandle* Timer = ActiveTimers.Find(OtherActor))
+    {
+        GetWorldTimerManager().ClearTimer(*Timer);
+        ActiveTimers.Remove(OtherActor);
+
+        UE_LOG(LogTemp, Warning, TEXT("%s left, timer stopped"), *OtherActor->GetName());
+    }
+}
+
+void ADamageZone::ApplyDamageToActor(UHealthComponent* ActorHealthComponent)
+{
+    if (!ActorHealthComponent)
+        return;
+
+    ActorHealthComponent->Damage(DamagePerSecond * DamageIntervalSecond);
+}

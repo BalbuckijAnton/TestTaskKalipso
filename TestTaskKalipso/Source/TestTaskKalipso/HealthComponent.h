@@ -39,4 +39,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Health")
     void Heal(float HealAmount);
+
+    UFUNCTION(BlueprintCallable, Category = "Damage")
+    void Damage(float DamageAmount);
 };

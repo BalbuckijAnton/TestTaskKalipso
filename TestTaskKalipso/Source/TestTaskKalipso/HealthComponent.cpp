@@ -58,3 +58,15 @@ void UHealthComponent::Heal(float HealAmount)
 
     OnHealthChanged.Broadcast(this, Health, -HealAmount); // ќтрицательное значение дл€ обозначени€ лечени€
 }
+
+void UHealthComponent::Damage(float DamageAmount)
+{
+    if (DamageAmount <= 0.0f || Health <= 0.0f)
+    {
+        return;
+    }
+
+    Health = FMath::Clamp(Health - DamageAmount, 0.0f, DefaultHealth);
+
+    OnHealthChanged.Broadcast(this, Health, DamageAmount);
+}
