@@ -7,11 +7,13 @@
 #include "Engine/Engine.h"
 #include "Blueprint/UserWidget.h"
 #include "HealthComponent.h"
+#include "StaminaComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RaceGameState.h"
 #include "HealthUserWidget.h"
+#include "StaminaUserWidget.h"
 
 ARaceGameHUD::ARaceGameHUD()
 {
@@ -19,9 +21,18 @@ ARaceGameHUD::ARaceGameHUD()
         TEXT("/Game/Blueprints/BP_HealthUserWidget")
     );
 
+    static ConstructorHelpers::FClassFinder<UUserWidget> StaminaBarWidgetBPClass(
+        TEXT("/Game/Blueprints/BP_StaminaUserWidget")
+    );
+
     if (HealthBarWidgetBPClass.Succeeded())
     {
         HealthWidgetClass = HealthBarWidgetBPClass.Class;
+    }
+
+    if (StaminaBarWidgetBPClass.Succeeded())
+    {
+        StaminaWidgetClass = StaminaBarWidgetBPClass.Class;
     }
 }
 
@@ -38,6 +49,15 @@ void ARaceGameHUD::BeginPlay()
         }
     }
 
+    if (StaminaWidgetClass)
+    {
+        StaminaWidget = CreateWidget<UStaminaUserWidget>(GetWorld(), StaminaWidgetClass);
+        if (StaminaWidget)
+        {
+            StaminaWidget->AddToViewport();
+        }
+    }
+
     APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
     if (PlayerPawn)
     {
@@ -47,6 +67,13 @@ void ARaceGameHUD::BeginPlay()
             HealthComponent->OnHealthChanged.AddDynamic(this, &ARaceGameHUD::OnHealthChanged);
             float MaxHealth = HealthComponent->GetMaxHealth();
             UpdateHealth(MaxHealth, MaxHealth);
+        }
+        StaminaComponent = PlayerPawn->FindComponentByClass<UStaminaComponent>();
+        if (StaminaComponent)
+        {
+            StaminaComponent->OnStaminaChanged.AddDynamic(this, &ARaceGameHUD::OnStaminaChanged);
+            float MaxStamina = StaminaComponent->GetMaxStamina();
+            UpdateStamina(MaxStamina, MaxStamina);
         }
     }
 }
@@ -84,6 +111,11 @@ void ARaceGameHUD::OnHealthChanged(UHealthComponent* HealthComp, float Health, f
     UpdateHealth(Health, MaxHealth);
 }
 
+void ARaceGameHUD::OnStaminaChanged(UStaminaComponent* StaminaComp, float MaxStamina, float CurStamina)
+{
+    UpdateStamina(CurStamina, MaxStamina);
+}
+
 void ARaceGameHUD::UpdateHealth(float Health, float MaxHealth)
 {
     if (!HealthWidget) return;
@@ -91,6 +123,16 @@ void ARaceGameHUD::UpdateHealth(float Health, float MaxHealth)
     if (HealthWidget)
     {
         HealthWidget->SetHealth(Health, HealthComponent->GetMaxHealth());
+    }
+}
+
+void ARaceGameHUD::UpdateStamina(float Stamina, float MaxStamina)
+{
+    if (!StaminaWidget) return;
+
+    if (StaminaWidget)
+    {
+        StaminaWidget->SetStamina(Stamina, MaxStamina);
     }
 }
 

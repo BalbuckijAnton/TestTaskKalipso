@@ -36,8 +36,6 @@ void ADamageZone::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
         );
 
         ActiveTimers.Add(OtherActor, NewTimer);
-
-        UE_LOG(LogTemp, Warning, TEXT("%s entered, timer started"), *OtherActor->GetName());
     }
 }
 
@@ -49,8 +47,6 @@ void ADamageZone::OnOverlapEnd(AActor* OverlappedActor, AActor* OtherActor)
     {
         GetWorldTimerManager().ClearTimer(*Timer);
         ActiveTimers.Remove(OtherActor);
-
-        UE_LOG(LogTemp, Warning, TEXT("%s left, timer stopped"), *OtherActor->GetName());
     }
 }
 

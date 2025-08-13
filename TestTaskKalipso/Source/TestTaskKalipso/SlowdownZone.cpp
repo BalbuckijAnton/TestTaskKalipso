@@ -26,7 +26,6 @@ void ASlowdownZone::BeginPlay()
 
 void ASlowdownZone::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Overlap begin"));
     if (OtherActor && OtherActor != this)
     {
         TMap<FName, FVector> OriginalMap;
