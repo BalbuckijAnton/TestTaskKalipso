@@ -54,7 +54,7 @@ void UStaminaComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	}
 }
 
-bool UStaminaComponent::SprintTrigger(bool IsOn = false)
+bool UStaminaComponent::SprintTrigger(bool IsOn)
 {
 	if (IsOn)
 	{
@@ -68,4 +68,13 @@ bool UStaminaComponent::SprintTrigger(bool IsOn = false)
 	{
 		return (IsSprint = false);
 	}
+}
+
+
+float UStaminaComponent::SetMaxStamina(float NewMaxStamina)
+{
+	Swap(NewMaxStamina, DefaultStamina);
+	Stamina = FMath::Min(Stamina, DefaultStamina);
+	OnStaminaChanged.Broadcast(this, DefaultStamina, Stamina);
+	return NewMaxStamina;
 }

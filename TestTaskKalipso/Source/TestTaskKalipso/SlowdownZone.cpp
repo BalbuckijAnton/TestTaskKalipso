@@ -43,7 +43,7 @@ void ASlowdownZone::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
                     if (SpeedPtr)
                     {
                         OriginalMap.Add(SpeedVarName, *SpeedPtr);
-                        // TODO: Multiplyer to UPROPERTY
+                        // TODO: Multiplyer to UPROPERTY or Maybe TMap with speeds
                         *SpeedPtr = (*SpeedPtr) / 2;
                     }
                 }

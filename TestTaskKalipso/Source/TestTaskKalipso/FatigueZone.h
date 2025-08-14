@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Engine/TriggerBox.h"
-#include "DamageZone.generated.h"
+#include "FatigueZone.generated.h"
 
-class UHealthComponent;
+class UStaminaComponent;
 
 UCLASS()
-class TESTTASKKALIPSO_API ADamageZone : public ATriggerBox
+class TESTTASKKALIPSO_API AFatigueZone : public ATriggerBox
 {
 	GENERATED_BODY()
 
 public:
-	ADamageZone();
+	AFatigueZone();
 
 protected:
 	virtual void BeginPlay() override;
@@ -25,15 +25,10 @@ protected:
 	UFUNCTION()
 	void OnOverlapEnd(AActor* OverlappedActor, AActor* OtherActor);
 
-	TMap<AActor*, FTimerHandle> ActiveTimers;
-
-	void ApplyDamageToActor(UHealthComponent* ActorHealthComponent);
+	TMap<AActor*, float> OldStamina;
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = "Damage")
-	float DamagePerSecond = 10.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Damage")
-	float DamageIntervalSecond = 0.5f;
+	UPROPERTY(EditAnywhere, Category = "Fatigue")
+	float FatigueMultiplier = 3.0f;
 };

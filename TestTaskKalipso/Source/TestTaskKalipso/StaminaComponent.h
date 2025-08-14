@@ -64,5 +64,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Sprint")
 	bool SprintTrigger(bool IsOn);
 
-
+	float SetMaxStamina(float NewMaxStamina);
 };

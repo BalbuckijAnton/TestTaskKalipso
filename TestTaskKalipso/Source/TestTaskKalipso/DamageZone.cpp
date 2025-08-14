@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "DamageZone.h"
 #include "HealthComponent.h"
 
@@ -19,10 +16,10 @@ void ADamageZone::BeginPlay()
 
 void ADamageZone::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 {
-    if (!OtherActor || OtherActor == this) return;
+    if (!OtherActor || OtherActor == this || ActiveTimers.Contains(OtherActor)) return;
 
     UHealthComponent* HealthComponent = Cast< UHealthComponent>(OtherActor->GetComponentByClass(UHealthComponent::StaticClass()));
-    if (HealthComponent && !ActiveTimers.Contains(OtherActor))
+    if (HealthComponent)
     {
         FTimerHandle NewTimer;
         GetWorldTimerManager().SetTimer(
